@@ -56,27 +56,7 @@ if __name__ == '__main__':
     initial_centroids, pixels, out_fname = read_normalize_reshape()
     calculate_centroids_until_convergance(initial_centroids, pixels, out_fname)
 
-# TODO tomorrow :
-'''
-1. Run results on university servers, see all good with out1.txt and out3.txt
-2. Generate files with k=2,4,8,16 cents with an initialization function
 
-    My centroids initialization process:
-    
-    I have used the K-mean++ initialization algorithm.
-    It works the following way:
-        1. Select the first centroid randomly from the data set
-        2. While length of chosen centroids < k
-            2.1 Compute for each point (pixel) its distance from the nearest centroid (from chosen centroids).
-            2.2 Select the point with the maximum distance to be the next centroid.
-        3. Return centroids
-        
-        
-     
-3. Implement Loss calculation in an iteration
-4. Print plots of iteration vs loss
-
-'''
 
 # TODO later till submission :
 

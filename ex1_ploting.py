@@ -107,6 +107,6 @@ def get_pixels():
 
 if __name__ == '__main__':
     pixels = get_pixels()
-    initial_centroids = plus_plus(pixels, 16)
+    initial_centroids = plus_plus(pixels, 2)
     calculate_centroids_until_convergance(initial_centroids, pixels)
 
