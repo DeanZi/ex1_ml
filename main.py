@@ -21,6 +21,7 @@ def calculate_centroids_until_convergance(centroids, pixels, out_fname):
         iteration = 0
         while True:
             cents_to_its_pixels = {}
+            total_distance_of_pixels = 0
             for i, centroid in enumerate(old_cents):
                 cents_to_its_pixels[i] = []
             for pixel_index, pixel in enumerate(pixels):
@@ -33,6 +34,7 @@ def calculate_centroids_until_convergance(centroids, pixels, out_fname):
                         min_dist = pixel_dist_from_cent[i]
                         index_of_min = i
                 cents_to_its_pixels[index_of_min].append(pixel_index)
+                total_distance_of_pixels += min_dist
             for key in cents_to_its_pixels.keys():
                 pixels_in_group = []
                 for i in cents_to_its_pixels[key]:
@@ -43,10 +45,17 @@ def calculate_centroids_until_convergance(centroids, pixels, out_fname):
                 # avg_of_pixels = sum_of_pixels / len(pixels_in_group)
                 new_cents[key] = np.average(pixels_in_group, axis=0)
                 # new_cents[key] = avg_of_pixels
-                print(new_cents[key])
+                # print(new_cents[key])
             new_cents = new_cents.round(4)
+            cost = total_distance_of_pixels / len(pixels)
+            print(cost)
             print(f"[iter {iteration}]:{','.join([str(i) for i in new_cents])}")
-            if np.array_equal(old_cents, new_cents):
+            plt.plot(iteration, cost)
+            if np.array_equal(old_cents, new_cents) or iteration == 8:
+                plt.xlabel('iteration')
+                plt.ylabel('average cost')
+                plt.title("K=" + str(k))
+                plt.show()
                 break
             old_cents = new_cents
             iteration += 1
@@ -92,3 +101,18 @@ def calculate_centroids_until_convergance(centroids, pixels, out_fname):
 if __name__ == '__main__':
     initial_centroids, pixels, out_fname = read_normalize_reshape()
     calculate_centroids_until_convergance(initial_centroids, pixels, out_fname)
+
+# TODO tomorrow :
+'''
+1. Run results on university servers, see all good with out1.txt and out3.txt
+2. Generate files with k=2,4,8,16 cents with an initialization function
+3. Implement Loss calculation in an iteration
+4. Print plots of iteration vs loss
+
+'''
+
+# TODO later till submission :
+
+'''
+Finish theoretical part 
+'''
