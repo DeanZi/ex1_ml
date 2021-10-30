@@ -14,12 +14,14 @@ def read_normalize_reshape():
 
 
 def calculate_centroids_until_convergance(centroids, pixels, out_fname):
+    # init old_cents to be as in file
     old_cents = centroids
     new_cents = np.empty_like(old_cents)
     k = len(old_cents)
     with open(out_fname, 'w') as outfile:
         iteration = 0
         while True:
+            # map from centroid to all pixel belongs to him in this iteration to come
             cents_to_its_pixels = {}
             total_distance_of_pixels = 0
             for i, centroid in enumerate(old_cents):
@@ -27,11 +29,10 @@ def calculate_centroids_until_convergance(centroids, pixels, out_fname):
             for pixel_index, pixel in enumerate(pixels):
                 min_dist = sys.maxsize
                 index_of_min = -1
-                pixel_dist_from_cent = {}
                 for i, centroid in enumerate(old_cents):
-                    pixel_dist_from_cent[i] = np.linalg.norm(pixel - centroid)
-                    if min_dist > pixel_dist_from_cent[i]:
-                        min_dist = pixel_dist_from_cent[i]
+                    pixel_dist_from_cent = np.linalg.norm(pixel - centroid)
+                    if min_dist > pixel_dist_from_cent:
+                        min_dist = pixel_dist_from_cent
                         index_of_min = i
                 cents_to_its_pixels[index_of_min].append(pixel_index)
                 total_distance_of_pixels += min_dist
@@ -39,32 +40,20 @@ def calculate_centroids_until_convergance(centroids, pixels, out_fname):
                 pixels_in_group = []
                 for i in cents_to_its_pixels[key]:
                     pixels_in_group.append(pixels[i])
-                # sum_of_pixels = np.empty_like(pixels[0])
-                # for pix in pixels_in_group:
-                #     sum_of_pixels += pix
-                # avg_of_pixels = sum_of_pixels / len(pixels_in_group)
                 new_cents[key] = np.average(pixels_in_group, axis=0)
-                # new_cents[key] = avg_of_pixels
-                # print(new_cents[key])
             new_cents = new_cents.round(4)
             cost = total_distance_of_pixels / len(pixels)
-            print(cost)
+            # print(cost)
             print(f"[iter {iteration}]:{','.join([str(i) for i in new_cents])}")
-            plt.plot(iteration, cost)
-            if np.array_equal(old_cents, new_cents) or iteration == 8:
-                plt.xlabel('iteration')
-                plt.ylabel('average cost')
-                plt.title("K=" + str(k))
-                plt.show()
+            # plt.plot(iteration, cost)
+            if np.array_equal(old_cents, new_cents):
+                # plt.xlabel('iteration')
+                # plt.ylabel('average cost')
+                # plt.title("K=" + str(k))
+                # plt.show()
                 break
-            old_cents = new_cents
+            old_cents = new_cents.round(4)
             iteration += 1
-
-
-
-
-
-
 
         # outfile.write(line)
     '''
