@@ -10,6 +10,7 @@ def read_normalize_reshape():
     pixels = orig_pixels.astype(float) / 255.
     # Reshape the image(128x128x3) into an Nx3 matrix where N = number of pixels.
     pixels = pixels.reshape(-1, 3)
+    print(centroids)
     return centroids, pixels, out_fname
 
 
@@ -62,4 +63,5 @@ if __name__ == '__main__':
 
 '''
 Finish theoretical part (ex1.pdf)
+Compare (maybe ask) the out.txt for cents5.txt
 '''
