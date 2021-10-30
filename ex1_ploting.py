@@ -42,14 +42,49 @@ def calculate_centroids_until_convergance(centroids, pixels, out_fname):
                     pixels_in_group.append(pixels[i])
                 new_cents[key] = np.average(pixels_in_group, axis=0)
             new_cents = new_cents.round(4)
-            line = f"[iter {iteration}]:{','.join([str(i) for i in new_cents])}"
-            outfile.write(line + '\n')
+            cost = total_distance_of_pixels / len(pixels)
+            # print(cost)
+            print(f"[iter {iteration}]:{','.join([str(i) for i in new_cents])}")
+            # plt.plot(iteration, cost)
             if np.array_equal(old_cents, new_cents):
+                # plt.xlabel('iteration')
+                # plt.ylabel('average cost')
+                # plt.title("K=" + str(k))
+                # plt.show()
                 break
             old_cents = new_cents.round(4)
             iteration += 1
 
+        # outfile.write(line)
+    '''
+    1. I will open a file named after out_name
+    2. I will iterate in while true - condition will be new cents are not equal to old ones
+        - init k sets (one for each cent)
+        2.1 for each pixel :
+            -init minimum dist and update after each of the following calcs
+            2.1.1 calc dist to cent 1
+            2.1.2 calc dist to cent 2
+            .
+            .
+            2.1.k calc dist to cent k
+            - add the pixel to cent x (the closest) set
+        - now that each pixel belong to cent, calc avg within the cent
+        - new cents = update each cent to be its avg
+        - print their format : iter ...
+        - if new cents = old cents : break or condition is broken
 
+
+
+
+    :param centroids:
+    :param pixels:
+    :param out_fname:
+    :return:
+
+    open questions : Does cents are in calculation of their own avg?
+    tmp answer :  test my results with out1.txt and out3.txt
+    '''
+    pass
 
 
 if __name__ == '__main__':
