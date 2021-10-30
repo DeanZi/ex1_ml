@@ -62,5 +62,5 @@ if __name__ == '__main__':
 
 '''
 Finish theoretical part (ex1.pdf)
-Compare (maybe ask) the out.txt for cents5.txt
+Compare (maybe ask) the out.txt for cents5.txt (Try without np.average)
 '''
