@@ -38,9 +38,12 @@ def calculate_centroids_until_convergance(centroids, pixels, out_fname):
                 total_distance_of_pixels += min_dist
             for key in cents_to_its_pixels.keys():
                 pixels_in_group = []
+                sum_of_pixels_in_group = 0
                 for i in cents_to_its_pixels[key]:
                     pixels_in_group.append(pixels[i])
-                new_cents[key] = np.average(pixels_in_group, axis=0)
+                    sum_of_pixels_in_group += pixels[i]
+                #new_cents[key] = np.average(pixels_in_group, axis=0)
+                new_cents[key] = sum_of_pixels_in_group / len(pixels_in_group)
             new_cents = new_cents.round(4)
             line = f"[iter {iteration}]:{','.join([str(i) for i in new_cents])}"
             outfile.write(line + '\n')
