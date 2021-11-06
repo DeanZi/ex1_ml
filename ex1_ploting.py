@@ -80,7 +80,6 @@ def plus_plus_initialize(dataset, k):
         # Select the pixel with the maximum distance to be the next centroid
         next_centroid = dataset[np.argmax(distances_from_centroid)]
         centroids.append(next_centroid)
-        distances_from_centroid
     return centroids
 
 
