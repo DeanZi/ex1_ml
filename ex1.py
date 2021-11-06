@@ -51,7 +51,7 @@ def calculate_centroids_until_convergance(centroids, pixels, out_fname):
             outfile.write(line + '\n')
             if np.array_equal(old_cents, new_cents) or iteration == 19:
                 break
-            old_cents = new_cents
+            old_cents = new_cents.round(4)
             iteration += 1
 
 
