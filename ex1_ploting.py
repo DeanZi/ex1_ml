@@ -3,9 +3,6 @@ import numpy as np
 import sys
 
 
-
-
-
 def calculate_centroids_until_convergance(centroids, pixels):
     # init old_cents to be as in file
     old_cents = centroids
@@ -52,48 +49,38 @@ def calculate_centroids_until_convergance(centroids, pixels):
         old_cents = new_cents.round(4)
         iteration += 1
 
+
 def distance(p1, p2):
-    return np.sum((p1 - p2)**2)
+    return np.sum((p1 - p2) ** 2)
+
+
 # initialization algorithm
-def plus_plus(data, k):
-    '''
-    initialized the centroids for K-means++
-    inputs:
-        data - numpy array of data points having shape (200, 2)
-        k - number of clusters
-    '''
-    ## initialize the centroids list and add
-    ## a randomly selected data point to the list
-    centroids = []
-    centroids.append(data[np.random.randint(
-        data.shape[0]), :])
-    # print("THIS IS DATA SHAPE[0]:", data.shape)
-    # plot(data, np.array(centroids))
 
-    ## compute remaining k - 1 centroids
-    for c_id in range(k - 1):
 
-        ## initialize a list to store distances of data
-        ## points from nearest centroid
-        dist = []
-        for i in range(data.shape[0]):
-            point = data[i, :]
-            d = sys.maxsize
+def plus_plus_initialize(dataset, k):
+    # Select the first centroid randomly from the data set
+    centroids = [dataset[np.random.randint(
+        len(dataset))]]
 
-            ## compute distance of 'point' from each of the previously
-            ## selected centroid and store the minimum distance
-            for j in range(len(centroids)):
-                temp_dist = distance(point, centroids[j])
-                d = min(d, temp_dist)
-            dist.append(d)
+    while len(centroids) < k:
 
-        ## select data point with maximum distance as our next centroid
-        dist = np.array(dist)
-        next_centroid = data[np.argmax(dist), :]
+        # Will hold all pixels distances from their closest centroid
+        distances_from_centroid = []
+        for pixel_index in range(len(dataset)):
+            pixel = dataset[pixel_index]
+            min_dist = sys.maxsize
+            # Compute for each pixel its distance from the nearest centroid (from chosen
+            # centroids)
+            for centroid_index in range(len(centroids)):
+                pixel_distance_from_centroid = np.sum((pixel - centroids[centroid_index]) ** 2)
+                min_dist = min(min_dist, pixel_distance_from_centroid)
+            distances_from_centroid.append(min_dist)
+
+        distances_from_centroid = np.array(distances_from_centroid)
+        # Select the pixel with the maximum distance to be the next centroid
+        next_centroid = dataset[np.argmax(distances_from_centroid)]
         centroids.append(next_centroid)
-        dist = []
-        # plot(data, np.array(centroids))
-    print(centroids)
+        distances_from_centroid
     return centroids
 
 
@@ -105,8 +92,8 @@ def get_pixels():
     pixels = pixels.reshape(-1, 3)
     return pixels
 
+
 if __name__ == '__main__':
     pixels = get_pixels()
-    initial_centroids = plus_plus(pixels, 2)
+    initial_centroids = plus_plus_initialize(pixels, 8)
     calculate_centroids_until_convergance(initial_centroids, pixels)
-
