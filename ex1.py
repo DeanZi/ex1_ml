@@ -42,14 +42,16 @@ def calculate_centroids_until_convergance(centroids, pixels, out_fname):
                 for i in cents_to_its_pixels[key]:
                     pixels_in_group.append(pixels[i])
                     sum_of_pixels_in_group += pixels[i]
-                #new_cents[key] = np.average(pixels_in_group, axis=0)
-                new_cents[key] = sum_of_pixels_in_group / len(pixels_in_group)
+                if len(pixels_in_group) > 0:
+                    new_cents[key] = sum_of_pixels_in_group / len(pixels_in_group)
+                else:
+                    new_cents[key] = old_cents[key]
             new_cents = new_cents.round(4)
             line = f"[iter {iteration}]:{','.join([str(i) for i in new_cents])}"
             outfile.write(line + '\n')
             if np.array_equal(old_cents, new_cents) or iteration == 19:
                 break
-            old_cents = new_cents.round(4)
+            old_cents = new_cents
             iteration += 1
 
 
@@ -65,5 +67,4 @@ if __name__ == '__main__':
 
 '''
 Finish theoretical part (ex1.pdf)
-Compare (maybe ask) the out.txt for cents5.txt (Try without np.average)
 '''
