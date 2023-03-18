@@ -15,11 +15,11 @@ Here is an example command to run the algorithm on an input image with 3 cluster
 python3 ex1.py dog.jpeg cents3.txt output.txt
 ```
 
-The compressed image will be saved in the compressed_dog.jpeg file, the centroids for each iteration until 
-convergence in output.txt.
+The compressed image will be saved in the `compressed_dog.jpeg` file, the centroids for each iteration until 
+convergence in `output.txt`.
 
 ### Author
-This code was written by DeanZi as part of a university programming project. Feel free to use and modify it as you like.
+This code was written by *DeanZi* as part of a university programming project. Feel free to use and modify it as you like.
 
 
 
