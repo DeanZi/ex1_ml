@@ -5,9 +5,9 @@ import sys
 
 def read_normalize_reshape():
     """
-    A method that reads the command line arguments: image file, initial centroids file path and path to output file (for example: python3 k_means.py dog.jpeg cents1.txt out.txt).
-    It returns the initial centroids, the normalized (and reshaped) pixels from the image file and the output file name.
-    :return:
+    A method that reads the command line arguments: image file, initial centroids file path and path to output file (
+    for example: python3 ex1.py dog.jpeg cents1.txt out.txt). It returns the initial centroids, the normalized (
+    and reshaped) pixels from the image file and the output file name. :return:
     """
 
     # read the command line arguments as specified
@@ -65,6 +65,7 @@ def calculate_centroids_until_convergence(centroids, pixels, out_fname):
     """
     Calculates the centroids until convergence or maximum number of iterations is reached.
     """
+    new_cents = centroids
     old_cents = centroids
     k = len(old_cents)
     with open(out_fname, 'w'):
@@ -88,7 +89,34 @@ def calculate_centroids_until_convergence(centroids, pixels, out_fname):
             old_cents = new_cents.round(4)
             iteration += 1
 
+    return new_cents
+
+
+def create_compressed_jpeg(image_file, centroids):
+    # Load the original image pixels
+    orig_pixels = plt.imread(image_file)
+
+    # Reshape the pixels into an Nx3 matrix
+    pixels = orig_pixels.reshape(-1, 3)
+
+    # Assign each pixel to its closest centroid
+    closest_centroids = find_closest_centroids(pixels, centroids)
+
+    # Replace each pixel with its assigned centroid
+    new_pixels = centroids[closest_centroids]
+
+    # Reshape the new pixels array back into its original dimensions
+    new_image = new_pixels.reshape(orig_pixels.shape)
+
+    # Convert the new pixels array back to an 8-bit integer representation
+    new_image = (new_image * 255).astype(np.uint8)
+
+    # Save the new image as a compressed jpeg file
+    plt.imsave("compressed_" + image_file, new_image)
+
 
 if __name__ == '__main__':
     initial_centroids, pixels, out_file_name = read_normalize_reshape()
-    calculate_centroids_until_convergence(initial_centroids, pixels, out_file_name)
+    converged_centroids = calculate_centroids_until_convergence(initial_centroids, pixels, out_file_name)
+    create_compressed_jpeg(sys.argv[1], converged_centroids)
+
