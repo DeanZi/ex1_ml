@@ -11,7 +11,8 @@ The code depends on the following Python packages:
 ### Usage Example
 Here is an example command to run the algorithm on an input image with 3 clusters:
 
-```python3 ex1.py dog.jpeg cents3.txt output.txt
+```sh
+python3 ex1.py dog.jpeg cents3.txt output.txt
 ```
 
 The compressed image will be saved in the compressed_dog.jpeg file, the centroids for each iteration until 
