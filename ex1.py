@@ -4,67 +4,91 @@ import sys
 
 
 def read_normalize_reshape():
-    image_fname, centroids_fname, out_fname = sys.argv[1], sys.argv[2], sys.argv[3]
-    centroids = np.loadtxt(centroids_fname)  # load centroids
-    orig_pixels = plt.imread(image_fname)
-    pixels = orig_pixels.astype(float) / 255.
-    # Reshape the image(128x128x3) into an Nx3 matrix where N = number of pixels.
-    pixels = pixels.reshape(-1, 3)
-    return centroids, pixels, out_fname
+    """
+    A method that reads the command line arguments: image file, initial centroids file path and path to output file (for example: python3 k_means.py dog.jpeg cents1.txt out.txt).
+    It returns the initial centroids, the normalized (and reshaped) pixels from the image file and the output file name.
+    :return:
+    """
+
+    # read the command line arguments as specified
+    image_file_name, centroids_file_name, output_file_name = sys.argv[1], sys.argv[2], sys.argv[3]
+
+    # load initial centroids from file
+    centroids = np.loadtxt(centroids_file_name)
+
+    # load image and normalize pixel values
+    orig_pixels = plt.imread(image_file_name)
+    normalized_pixels = orig_pixels.astype(float) / 255.
+
+    # reshape the image(128x128x3) into an Nx3 matrix where N = number of pixels
+    reshaped_pixels = normalized_pixels.reshape(-1, 3)
+
+    return centroids, reshaped_pixels, output_file_name
 
 
-def calculate_centroids_until_convergance(centroids, pixels, out_fname):
-    # init old_cents to be as in file
+def find_closest_centroids(pixels, centroids):
+    """
+    Returns an array containing the index of the closest centroid to each pixel.
+    """
+    num_pixels = pixels.shape[0]
+    num_centroids = centroids.shape[0]
+    distances = np.zeros((num_pixels, num_centroids))
+    for i in range(num_centroids):
+        distances[:, i] = np.linalg.norm(pixels - centroids[i], axis=1)
+    return np.argmin(distances, axis=1)
+
+
+def calculate_new_centroids(groups, pixels, old_cents):
+    """
+    Calculates the new centroids based on the given pixel groups.
+    """
+    new_centroids = np.empty_like(old_cents)
+    for key in groups.keys():
+        pixels_in_group = pixels[groups[key]]
+        if len(pixels_in_group) > 0:
+            new_centroids[key] = np.mean(pixels_in_group, axis=0)
+        else:
+            new_centroids[key] = old_cents[key]
+    return new_centroids.round(4)
+
+
+def write_output_file(iteration, centroids, out_fname):
+    """
+    Writes the current iteration's centroids to the output file.
+    """
+    with open(out_fname, 'a') as outfile:
+        line = f"[iter {iteration}]:{','.join([str(i) for i in centroids])}"
+        outfile.write(line + '\n')
+
+
+def calculate_centroids_until_convergence(centroids, pixels, out_fname):
+    """
+    Calculates the centroids until convergence or maximum number of iterations is reached.
+    """
     old_cents = centroids
-    new_cents = np.empty_like(old_cents)
     k = len(old_cents)
-    with open(out_fname, 'w') as outfile:
+    with open(out_fname, 'w'):
         iteration = 0
         while True:
-            # map from centroid to all pixel belongs to him in this iteration to come
-            cents_to_its_pixels = {}
-            total_distance_of_pixels = 0
-            for i, centroid in enumerate(old_cents):
-                cents_to_its_pixels[i] = []
-            for pixel_index, pixel in enumerate(pixels):
-                min_dist = sys.maxsize
-                index_of_min = -1
-                for i, centroid in enumerate(old_cents):
-                    pixel_dist_from_cent = np.linalg.norm(pixel - centroid)
-                    if min_dist > pixel_dist_from_cent:
-                        min_dist = pixel_dist_from_cent
-                        index_of_min = i
-                cents_to_its_pixels[index_of_min].append(pixel_index)
-                total_distance_of_pixels += min_dist
-            for key in cents_to_its_pixels.keys():
-                pixels_in_group = []
-                sum_of_pixels_in_group = 0
-                for i in cents_to_its_pixels[key]:
-                    pixels_in_group.append(pixels[i])
-                    sum_of_pixels_in_group += pixels[i]
-                if len(pixels_in_group) > 0:
-                    new_cents[key] = sum_of_pixels_in_group / len(pixels_in_group)
-                else:
-                    new_cents[key] = old_cents[key]
-            new_cents = new_cents.round(4)
-            line = f"[iter {iteration}]:{','.join([str(i) for i in new_cents])}"
-            outfile.write(line + '\n')
+            # Assign pixels to their closest centroid
+            groups = {i: [] for i in range(k)}
+            idx = find_closest_centroids(pixels, old_cents)
+            for i in range(len(idx)):
+                groups[idx[i]].append(i)
+
+            # Calculate new centroids
+            new_cents = calculate_new_centroids(groups, pixels, old_cents)
+
+            # Write the output to a file
+            write_output_file(iteration, new_cents, out_fname)
+
+            # Check for convergence
             if np.array_equal(old_cents, new_cents) or iteration == 19:
                 break
             old_cents = new_cents.round(4)
             iteration += 1
 
 
-
-
 if __name__ == '__main__':
-    initial_centroids, pixels, out_fname = read_normalize_reshape()
-    calculate_centroids_until_convergance(initial_centroids, pixels, out_fname)
-
-
-
-# TODO later till submission :
-
-'''
-Finish theoretical part (ex1.pdf)
-'''
+    initial_centroids, pixels, out_file_name = read_normalize_reshape()
+    calculate_centroids_until_convergence(initial_centroids, pixels, out_file_name)
