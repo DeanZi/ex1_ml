@@ -54,10 +54,14 @@ def distance(p1, p2):
     return np.sum((p1 - p2) ** 2)
 
 
-# initialization algorithm
-
-
 def plus_plus_initialize(dataset, k):
+    """
+    initialization algorithm
+    :param dataset:
+    :param k:
+    :return:
+    """
+
     # Select the first centroid randomly from the data set
     centroids = [dataset[np.random.randint(
         len(dataset))]]
